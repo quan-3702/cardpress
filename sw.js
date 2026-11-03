@@ -1,4 +1,4 @@
-const CACHE = 'cardpress-v4';
+const CACHE = 'cardpress-v5';
 const ASSETS = ['./', 'index.html', 'help.html', 'style.css', 'designs.js', 'app.js', 'manifest.json', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png', 'privacy.html', 'why.html'];
 
 self.addEventListener('install', (e) => {
