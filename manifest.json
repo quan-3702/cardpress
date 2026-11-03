@@ -1,0 +1,16 @@
+{
+  "name": "CardPress - Photo Card Maker",
+  "short_name": "CardPress",
+  "description": "Make photo Christmas, holiday, New Year and Tết cards, birthday and thank-you cards at home. Photo collages, folded cards, personal names, address labels and a card list. Offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#b4232c",
+  "theme_color": "#b4232c",
+  "categories": ["lifestyle", "photo", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

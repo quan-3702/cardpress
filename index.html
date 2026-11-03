@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CardPress – Photo Card Maker</title>
+  <meta name="description" content="Make photo Christmas cards, holiday cards, Tết and New Year cards, birthday and thank-you cards at home. Photo collages, folded cards with a message inside, personalized names, address labels and a card list. Offline, no account, no subscription.">
+  <meta name="theme-color" content="#b4232c">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <style id="pageRule">@page { size: letter portrait; margin: 0; }</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icon-192.png" alt="" width="30" height="30"><span>CardPress</span></div>
+    <select id="projPick" title="Your cards"></select>
+    <div class="top-btns">
+      <button id="printBtn" class="primary">🖨 Print</button>
+      <button id="moreBtn" class="tb">☰ More</button>
+      <button id="proBtn" class="pro-btn" hidden>★ Get Pro</button>
+    </div>
+    <div id="menu" class="menu" hidden>
+      <button id="newProj">＋ New card</button>
+      <button id="dupProj">⧉ Duplicate this card</button>
+      <button id="renameProj">✎ Rename this card</button>
+      <button id="delProj" class="danger">🗑 Delete this card…</button>
+      <hr>
+      <button id="photoShopBtn">📷 Save for a photo shop (5 × 7 JPEG) ★</button>
+      <button id="pngBtn">🖼 Save as a picture (PNG) ★</button>
+      <hr>
+      <button id="sampleBtn">✨ Show me an example</button>
+      <button id="backupBtn">💾 Back up everything</button>
+      <button id="restoreBtn2">📂 Restore a backup…</button>
+      <hr>
+      <a href="help.html" target="_blank" rel="noopener">❓ How to use CardPress</a>
+      <a href="why.html" target="_blank" rel="noopener">💡 Why CardPress – compare</a>
+      <a href="mailto:thequan03072002@gmail.com?subject=CardPress%20feedback">✉ Feedback &amp; support</a>
+    </div>
+    <input id="fileIn" type="file" hidden>
+  </header>
+
+  <main class="pane">
+    <aside class="side">
+      <nav class="stabs" id="stabs">
+        <button data-s="design" class="on">🎨 Design</button>
+        <button data-s="words">✍️ Words</button>
+        <button data-s="photos">🖼 Photos</button>
+        <button data-s="more">💌 Inside &amp; back</button>
+        <button data-s="people">👪 Card list</button>
+      </nav>
+
+      <section class="sec" data-s="design">
+        <label class="field">Occasion<select id="occ"></select></label>
+        <label class="field">Card type<select id="format"></select></label>
+        <div class="two">
+          <label class="field">Paper<select id="paper"><option value="letter">Letter (US)</option><option value="a4">A4</option></select></label>
+          <label class="field">Font<select id="font"></select></label>
+        </div>
+        <h3>Layout</h3>
+        <div class="lays" id="lays"></div>
+        <h3>Design</h3>
+        <div class="themes" id="themes"></div>
+      </section>
+
+      <section class="sec" data-s="words" hidden>
+        <label class="field">Greeting<select id="greetSel"></select></label>
+        <label class="field" id="greetOwnRow" hidden>Your own greeting<input id="greetOwn" maxlength="60" placeholder="e.g. Warmest Wishes"></label>
+        <label class="field">Message<textarea id="msg" rows="3" maxlength="240"></textarea></label>
+        <label class="field">Signed<input id="sign" maxlength="80" placeholder="Love, The Nguyen Family"></label>
+        <label class="check"><input type="checkbox" id="showYear"> Show the year</label>
+        <label class="field">Year<input id="yearIn" type="number" min="1900" max="2200"></label>
+      </section>
+
+      <section class="sec" data-s="photos" hidden>
+        <p class="hint" id="photoHint">Click a photo frame on the card, then add a photo. Drag the photo to move it, and use the slider or your mouse wheel to zoom.</p>
+        <div class="frames" id="frameList"></div>
+        <label class="field">Zoom<input id="zoom" type="range" min="1" max="3" step="0.02" value="1"></label>
+        <div class="row-btns"><button id="photoBtn" class="primary">＋ Add or replace photo</button><button id="photoDel" class="ghost">Remove</button></div>
+      </section>
+
+      <section class="sec" data-s="more" hidden>
+        <div id="foldOnly">
+          <h3>Inside of the folded card</h3>
+          <label class="field">Inside greeting<input id="inGreet" maxlength="60" placeholder="Wishing you a magical season"></label>
+          <label class="field">Inside message<textarea id="inMsg" rows="5" maxlength="900"></textarea></label>
+        </div>
+        <div id="flatOnly">
+          <h3>Back of the card ★</h3>
+          <label class="check"><input type="checkbox" id="backOn"> Print a back side (turn the paper over and print again)</label>
+          <label class="field">Back text – family news, a short letter<textarea id="backText" rows="6" maxlength="1200"></textarea></label>
+          <label class="check"><input type="checkbox" id="backPhoto"> Small photo on the back (uses photo 1)</label>
+        </div>
+        <h3>Personal names ★</h3>
+        <label class="check"><input type="checkbox" id="personal"> Start each card with “Dear …” using the names in your card list</label>
+        <p class="hint">Cards are printed once for every person on your card list who is ticked “Send”.</p>
+      </section>
+
+      <section class="sec" data-s="people" hidden>
+        <p class="hint">Keep track of who gets a card this year. Tick “Send” for the people to print personal cards and address labels for.</p>
+        <div class="people-head"><input id="pSearch" placeholder="Search names…"><button id="pAdd" class="primary">＋ Add</button></div>
+        <div id="peopleList" class="people"></div>
+        <p class="hint" id="peopleInfo"></p>
+        <div class="row-btns">
+          <button id="pPaste" class="ghost">📋 Paste a list ★</button>
+          <button id="pCsv" class="ghost">📂 Import CSV ★</button>
+          <button id="pExport" class="ghost">⬇ Export CSV</button>
+        </div>
+        <h3>Address labels ★</h3>
+        <label class="field">Label sheet<select id="labelSheet"><option value="5160">Avery 5160 / 8160 – 30 per Letter sheet</option><option value="l7160">Avery L7160 – 21 per A4 sheet</option><option value="5163">Avery 5163 – 10 per Letter sheet (big)</option></select></label>
+        <label class="field">Return address (printed on a full sheet of its own labels)<textarea id="retAddr" rows="3" maxlength="200" placeholder="The Nguyen Family&#10;12 Oak Street&#10;Springfield, IL 62704"></textarea></label>
+        <div class="row-btns"><button id="labelsBtn" class="ghost">🏷 Print address labels ★</button><button id="retBtn" class="ghost">🏷 Print return labels ★</button></div>
+      </section>
+    </aside>
+
+    <section class="main-col">
+      <div class="view-bar">
+        <div class="vtabs" id="vtabs"></div>
+        <span class="grow"></span>
+        <span class="muted" id="sizeInfo"></span>
+      </div>
+      <div id="page" class="page"></div>
+      <p class="hint center" id="printHint"></p>
+    </section>
+  </main>
+
+  <dialog id="pDlg" class="dlg">
+    <h2 id="pDlgTitle">Add a person</h2>
+    <label class="field">Name on the card (“Dear …”)<input id="pName" maxlength="60" placeholder="Grandma &amp; Grandpa"></label>
+    <label class="field">Address (for labels)<textarea id="pAddr" rows="4" maxlength="240" placeholder="Mr. &amp; Mrs. Tran&#10;45 Maple Ave&#10;Austin, TX 78701"></textarea></label>
+    <div class="two"><label class="check"><input type="checkbox" id="pSend" checked> Send a card</label><label class="check"><input type="checkbox" id="pGot"> Got a card from them</label></div>
+    <div class="row-btns"><button id="pSave" class="primary">Save</button><button id="pDel" class="ghost danger">Delete</button><button id="pCancel" class="ghost">Cancel</button></div>
+  </dialog>
+
+  <dialog id="pasteDlg" class="dlg">
+    <h2>Paste a list</h2>
+    <p class="muted">One person per line. Put the address after a tab or a “|”, with “;” between address lines – or just names.</p>
+    <textarea id="pasteIn" rows="9" placeholder="Grandma &amp; Grandpa | 45 Maple Ave; Austin, TX 78701&#10;Uncle Minh&#10;The Smiths | 9 Pine Rd; Portland, OR 97201"></textarea>
+    <div class="row-btns"><button id="pasteGo" class="primary">Add to my list</button><button id="pasteCancel" class="ghost">Cancel</button></div>
+  </dialog>
+
+  <dialog id="printDlg" class="dlg">
+    <h2>🖨 Print your cards</h2>
+    <p class="muted" id="printWhat"></p>
+    <label class="field" id="copiesRow">How many cards<input id="copies" type="number" min="1" max="500" value="2"></label>
+    <ol class="steps" id="printSteps"></ol>
+    <div class="row-btns" id="printBtns"></div>
+    <p class="hint">Tip: print one test sheet on plain paper first. Card stock (65–110 lb / 176–300 g/m²) looks best. Turn off “Fit to page” only if the size comes out wrong.</p>
+    <div class="row-btns"><button id="printClose" class="ghost">Close</button></div>
+  </dialog>
+
+  <dialog id="proDialog" class="dlg">
+    <h2>CardPress Pro</h2>
+    <p class="muted">One-time purchase. Yours forever on this Microsoft account – no subscription. Big card-making programs cost $30–$50.</p>
+    <ul class="pro-list">
+      <li><strong>All designs</strong> <span class="muted">(Free: 1 design per occasion)</span></li>
+      <li><strong>Photo collages</strong> – 2, 3, 4 or 6 photos on one card</li>
+      <li><strong>Folded cards</strong> with your message inside, square cards and postcards</li>
+      <li><strong>Back side</strong> – family news letter and a small photo</li>
+      <li><strong>Personal “Dear …” cards</strong> for everyone on your card list</li>
+      <li><strong>Address &amp; return labels</strong>, paste or import your list</li>
+      <li><strong>Save for a photo shop</strong> (5 × 7 JPEG) and as a picture</li>
+      <li>As many cards as you like <span class="muted">(Free: 2)</span>, unlimited card list <span class="muted">(Free: 15 people)</span></li>
+    </ul>
+    <p id="proMsg" class="pro-msg" hidden></p>
+    <p id="trialInfo" class="pro-msg" hidden></p>
+    <div class="row-btns">
+      <button id="trialBtn" class="ghost" hidden>Try every Pro feature free for 7 days</button>
+      <button id="buyBtn" class="primary">Unlock Pro</button>
+      <button id="restoreBtn" class="ghost">Restore purchase</button>
+      <button id="closePro" class="ghost">Not now</button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <div id="printArea"></div>
+  <script src="designs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
