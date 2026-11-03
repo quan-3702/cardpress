@@ -117,3 +117,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   #printArea { display: block; }
   #printArea svg { display: block; width: 100vw; height: 100vh; page-break-after: always; break-after: page; }
 }
+
+/* feedback note */
+.fb-note { color: var(--muted); font-size: 12px; font-weight: 400; line-height: 1.45; margin: 14px 0 4px; overflow-wrap: anywhere; }
+.fb-note a { color: inherit; text-decoration: underline; }

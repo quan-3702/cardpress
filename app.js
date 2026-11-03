@@ -19,20 +19,39 @@ const PRO_IDS = [PRO_SKU];
 let STORE_URL = 'https://apps.microsoft.com/detail/9NWPW90G6DV1';
 let proAvailable = false, proSku = PRO_SKU, isPro = false;
 proAvailable = true; // owner's rule: Pro is never free – free limits apply everywhere (website, Store, offline) until Pro is bought
-try { isPro = localStorage.getItem('cardpress-pro') === '1'; } catch (_) {}
+// saved Pro flag: the website never trusts it (web visitors cannot buy there); the Store app trusts it for 30 days after the Store last confirmed the purchase
+const HAS_STORE = typeof window !== 'undefined' && 'getDigitalGoodsService' in window, PRO_OK_DAYS = 30;
+function cachedPro() {
+  try {
+    if (!HAS_STORE || localStorage.getItem('cardpress-pro') !== '1') return false;
+    const ok = localStorage.getItem('cardpress-pro-ok'), now = Date.now();
+    if (ok === null) { localStorage.setItem('cardpress-pro-ok', String(now)); return true; } // saved by an older version: counts as confirmed now, once
+    const t = Number(ok);
+    return t > 0 && t <= now + 86400000 && now - t < PRO_OK_DAYS * 86400000; // a date in the future or garbage is not trusted
+  } catch (_) { return false; }
+}
+function storePro(owned) { // only when the Store really answered
+  try { if (owned) { localStorage.setItem('cardpress-pro', '1'); localStorage.setItem('cardpress-pro-ok', String(Date.now())); } else { localStorage.removeItem('cardpress-pro'); localStorage.removeItem('cardpress-pro-ok'); } } catch (_) {}
+}
+isPro = cachedPro();
 const TRIAL_DAYS = 7;
 let trialStart = 0;
-try { trialStart = Number(localStorage.getItem('cardpress-trial')) || 0; } catch (_) {}
+// a trial start in the future, NaN or garbage counts as an ended trial; of the two saved copies the earlier wins,
+// so clearing or rewriting only one of them never restarts the trial
+const trialVal = (v) => { if (v == null || v === '' || v === 0) return 0; const n = Number(v); return n > 0 && n <= Date.now() + DAY ? n : 1; };
+const firstTrial = (a, b) => (a && b ? Math.min(a, b) : a || b);
+try { trialStart = trialVal(localStorage.getItem('cardpress-trial')); } catch (_) {}
 const trialLeft = () => (trialStart && trialStart < Date.now() + DAY ? Math.max(0, Math.min(TRIAL_DAYS, Math.ceil((trialStart + TRIAL_DAYS * DAY - Date.now()) / DAY))) : 0); // a start date in the future (clock changed) does not extend the trial
 const trialActive = () => trialLeft() > 0;
 const unlocked = () => isPro || !proAvailable || trialActive();
 async function loadTrial() {
   const t = await dbGet('trial').catch(() => 0);
-  trialStart = Math.max(trialStart, Number(t) || 0);
+  trialStart = firstTrial(trialStart, trialVal(t));
   if (trialStart) { try { localStorage.setItem('cardpress-trial', String(trialStart)); } catch (_) {} dbSet('trial', trialStart).catch(() => {}); }
 }
 async function startTrial() {
-  if (trialStart) return;
+  await loadTrial(); // the IndexedDB copy counts too
+  if (trialStart) { openPro(''); return; }
   trialStart = Date.now();
   try { localStorage.setItem('cardpress-trial', String(trialStart)); } catch (_) {}
   await dbSet('trial', trialStart).catch(() => {});
@@ -45,7 +64,6 @@ async function billing() {
 }
 function setPro(v) {
   isPro = v;
-  try { localStorage.setItem('cardpress-pro', v ? '1' : '0'); } catch (_) {}
   const b = $('proBtn');
   b.textContent = proLabel();
   b.classList.toggle('is-pro', v || trialActive());
@@ -68,7 +86,7 @@ async function checkPro() {
     if (details[0]) { proSku = details[0].itemId; if (!PRO_IDS.includes(proSku)) PRO_IDS.push(proSku); }
     const list = await svc.listPurchases();
     const owned = list.some((p) => PRO_IDS.includes(p.itemId));
-    if (owned || details.length) { setPro(owned); return owned; }
+    if (owned || details.length) { storePro(owned); setPro(owned); return owned; }
     setPro(isPro); // Store did not answer (offline): keep what we knew
     return isPro;
   } catch (_) { return isPro; }
